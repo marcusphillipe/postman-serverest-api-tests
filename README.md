@@ -37,7 +37,7 @@ api-test-serverest/
 ```bash
 ### Clone the repository
 
-git clone https://github.com/marcusphillipe/api-test-serverest.git  
+git clone https://github.com/marcusphillipe/postman-serverest-api-tests.git  
 cd postman-serverest-api-tests
 
 ### Install Newman locally
