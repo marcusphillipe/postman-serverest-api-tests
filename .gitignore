@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# Arquivos de log
+*.log
+
+# Pasta de cache do npm
+.npm/
+
+# Configs do VS Code
+.vscode/

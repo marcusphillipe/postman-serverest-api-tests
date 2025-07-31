@@ -52,7 +52,7 @@ npm run test:api
 
 npm run test:html
 
-Make sure your `package.json` includes:
+### Make sure your `package.json` includes:
 
 "scripts": {
   "test:api": "newman run collections/ServeRest.postman_collection.json -e environments/Serverest_Dev.postman_environment.json",
@@ -76,11 +76,11 @@ Make sure your `package.json` includes:
 ## 📈 HTML Report
 
 ```bash
-To generate a visual HTML report using Newman:
+### To generate a visual HTML report using Newman:
 
 npm run test:html
 
-Open it from your browser at:
+### Open it from your browser at:
 
 reports/report.html
 ```
@@ -102,7 +102,7 @@ Project developed for learning, professional growth, and showcasing QA automatio
 
 **Marcus Phillipe**  
 🔗 [LinkedIn](https://www.linkedin.com/in/marcusparamos/)  
-📁 [GitHub Repo]()
+📁 [GitHub Repo](https://github.com/marcusphillipe/postman-serverest-api-tests.git)
 
 ## 📬 Contributions
 
