@@ -1,0 +1,1437 @@
+{
+	"info": {
+		"_postman_id": "b857ae37-9b14-4fc5-b1bf-abc216843cca",
+		"name": "ServeRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46136398",
+		"_collection_link": "https://marcusphillipe-4720208.postman.co/workspace/Marcus-Phillipe's-Workspace~8b06f42a-6b95-4aa8-8247-9c07230d6cc6/collection/46136398-b857ae37-9b14-4fc5-b1bf-abc216843cca?action=share&source=collection_link&creator=46136398"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson = pm.response.json()\r",
+									"\r",
+									"let tokenSplit = responseJson['authorization'].split(' ')\r",
+									"\r",
+									"pm.environment.set(\"accessToken\", tokenSplit[1]);\r",
+									"\r",
+									"pm.test(\"Status code is 200 - Logged in successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Users List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Users found!\");\r",
+									"    pm.test(\"Status code is 200 - Users found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Users not found.\");\r",
+									"    pm.test(\"Status code is 400 - Users not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 300ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/usuarios",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomNumber = Math.floor(Math.random() * 9000)\r",
+									"const randomName = `User Number ${randomNumber}`\r",
+									"const randomEmail = `name.${randomNumber}@qa.com`\r",
+									"\r",
+									"pm.environment.set('nome', randomName)\r",
+									"pm.environment.set('email', randomEmail)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"pm.test(\"Status code is 201 - User registered successfully\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code == 201) {\r",
+									"    pm.environment.set('newUserId', responseJson._id)\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"{{nome}}\",\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"teste\",\r\n  \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/usuarios",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ User found!\");\r",
+									"    pm.test(\"Status code is 200 - User found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ User not found.\");\r",
+									"    pm.test(\"Status code is 400 - User not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/usuarios/{{newUserId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"usuarios",
+								"{{newUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"let responseJson = pm.response.json();\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    const message = responseJson.message;\r",
+									"\r",
+									"    if (message === 'Registro excluído com sucesso') {\r",
+									"        console.log(\"✅ User deleted successfully.\");\r",
+									"        pm.test(\"Status 200 - User deleted\", function () {\r",
+									"            pm.expect(message).to.eql('Registro excluído com sucesso');\r",
+									"        });\r",
+									"    } else if (message === 'Nenhum registro excluído') {\r",
+									"        console.log(\"⚠️ User not deleted (maybe dont' exist).\");\r",
+									"        pm.test(\"Status 200 - User not deleted\", function () {\r",
+									"            pm.expect(message).to.eql('Nenhum registro excluído');\r",
+									"        });\r",
+									"    } else {\r",
+									"        console.log(\"⚠️ Mensagem inesperada:\", message);\r",
+									"        pm.test(\"Mensagem inesperada\", function () {\r",
+									"            pm.expect([\"Registro excluído com sucesso\", \"Nenhum registro excluído\"]).to.include(message);\r",
+									"        });\r",
+									"    }\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ User not deleted.\");\r",
+									"    pm.test(\"Status 400 - User not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/usuarios/{{newUserId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"usuarios",
+								"{{newUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomNumber = Math.floor(Math.random() * 1000)\r",
+									"const newRandomName = `User Number ${randomNumber}`\r",
+									"const newRandomEmail = `name.${randomNumber}@qa.com`\r",
+									"\r",
+									"pm.environment.set('newRandomName', newRandomName)\r",
+									"pm.environment.set('newRandomEmail', newRandomEmail)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ User edited successfully!\");\r",
+									"    pm.test(\"Status code is 200 - User edited\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ User not found.\");\r",
+									"    pm.test(\"Status code is 400 - User not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"{{newRandomName}}\",\r\n  \"email\": \"{{newRandomEmail}}\",\r\n  \"password\": \"teste\",\r\n  \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/usuarios/{{newUserId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"usuarios",
+								"{{newUserId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Product List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Products found!\");\r",
+									"    pm.test(\"Status code is 200 - Products found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Products not found.\");\r",
+									"    pm.test(\"Status code is 400 - Products not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 300ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/produtos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"produtos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})\r",
+									"\r",
+									"var productQuantityNumber = Math.floor(Math.random() * 1000)\r",
+									"const randomProduct = `Product Number ${Math.floor(Math.random() * 1000)}`\r",
+									"const randomPrice = Math.floor(Math.random() * 9000)\r",
+									"\r",
+									"console.log('productQuantityNumber: ', productQuantityNumber)\r",
+									"\r",
+									"while(productQuantityNumber <= 100) {\r",
+									"    productQuantityNumber = Math.floor(Math.random() * 1000)\r",
+									"    console.log('productQuantityNumber: ', productQuantityNumber)\r",
+									"} \r",
+									"\r",
+									"pm.environment.set('randomProduct', randomProduct)\r",
+									"pm.environment.set('randomPrice', randomPrice)\r",
+									"pm.environment.set('productQuantityNumber', productQuantityNumber)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 201) {\r",
+									"    console.log(\"✅ Product created successfully!\");\r",
+									"    pm.test(\"Status 201 - Product created successfully\", function () {\r",
+									"        pm.expect(statusCode).to.eql(201);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Product already exists.\");\r",
+									"    pm.test(\"Status 400 - Product already exists\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"if(pm.response.code == 201) {\r",
+									"    pm.environment.set('newProductId', responseJson._id)\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"{{randomProduct}}\",\r\n  \"preco\": {{randomPrice}},\r\n  \"descricao\": \"Product\",\r\n  \"quantidade\": {{productQuantityNumber}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/produtos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"produtos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Product found!\");\r",
+									"    pm.test(\"Status code is 200 - Product found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Product not found.\");\r",
+									"    pm.test(\"Status code is 400 - Product not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/produtos/{{newProductId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"produtos",
+								"{{newProductId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})\r",
+									"\r",
+									"const newRandomProduct = `User Number ${Math.floor(Math.random() * 1000)}`\r",
+									"const newRandomPrice = Math.floor(Math.random() * 9000)\r",
+									"\r",
+									"pm.environment.set('newRandomProduct', newRandomProduct)\r",
+									"pm.environment.set('newRandomPrice', newRandomPrice)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Product edited successfully!\");\r",
+									"    pm.test(\"Status code is 200 - Product edited\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Product not found.\");\r",
+									"    pm.test(\"Status code is 400 - Product not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"{{newRandomProduct}}\",\r\n  \"preco\": {{newRandomPrice}},\r\n  \"descricao\": \"Smartphone\",\r\n  \"quantidade\": 437\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/produtos/{{newProductId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"produtos",
+								"{{newProductId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"let responseJson = pm.response.json();\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    const message = responseJson.message;\r",
+									"\r",
+									"    if (message === 'Registro excluído com sucesso') {\r",
+									"        console.log(\"✅ Product deleted successfully.\");\r",
+									"        pm.test(\"Status 200 - Product deleted\", function () {\r",
+									"            pm.expect(message).to.eql('Registro excluído com sucesso');\r",
+									"        });\r",
+									"    } else if (message === 'Nenhum registro excluído') {\r",
+									"        console.log(\"⚠️ Product not deleted (maybe dont' exist).\");\r",
+									"        pm.test(\"Status 200 - Product not deleted\", function () {\r",
+									"            pm.expect(message).to.eql('Nenhum registro excluído');\r",
+									"        });\r",
+									"    } else {\r",
+									"        console.log(\"⚠️ Unexpected message:\", message);\r",
+									"        pm.test(\"Unexpected message\", function () {\r",
+									"            pm.expect([\"Registro excluído com sucesso\", \"Nenhum registro excluído\"]).to.include(message);\r",
+									"        });\r",
+									"    }\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Product not deleted.\");\r",
+									"    pm.test(\"Status 400 - User not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/produtos/{{newProductId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"produtos",
+								"{{newProductId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Cart List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Carts found!\");\r",
+									"    pm.test(\"Status code is 200 - Carts found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Carts not found.\");\r",
+									"    pm.test(\"Status code is 400 - Carts not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 300ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/carrinhos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carrinhos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"    console.log(\"✅ Cart found!\");\r",
+									"    pm.test(\"Status code is 200 - Cart found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(200);\r",
+									"    });\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Cart not found.\");\r",
+									"    pm.test(\"Status code is 400 - Cart not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/carrinhos/{{newCartId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carrinhos",
+								"{{newCartId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Cart",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})\r",
+									"\r",
+									"const cartQuantityNumber = Math.floor(Math.random() * 100)\r",
+									"pm.environment.set('cartQuantityNumber', cartQuantityNumber)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"let statusCode = pm.response.code;\r",
+									"const message = responseJson.message;\r",
+									"\r",
+									"if (statusCode === 201) {\r",
+									"    console.log(\"✅ Cart created successfully!\");\r",
+									"    pm.test(\"Status 201 - Cart created successfully\", function () {\r",
+									"        pm.expect(message).to.eql('Cadastro realizado com sucesso');\r",
+									"    });\r",
+									"} else if (statusCode === 400 && message === 'Não é permitido possuir produto duplicado') {\r",
+									"    console.log(\"⚠️ Product already exists.\");\r",
+									"    pm.test(\"Status 400 - Product already exists\", function () {\r",
+									"        pm.expect(message).to.eql('Não é permitido possuir produto duplicado');\r",
+									"    });\r",
+									"} else if (statusCode === 400 && message === 'Não é permitido ter mais de 1 carrinho') {\r",
+									"    console.log(\"⚠️ Cart already exists.\");\r",
+									"    pm.test(\"Status 400 - Cart already exists\", function () {\r",
+									"        pm.expect(message).to.eql('Não é permitido ter mais de 1 carrinho');\r",
+									"    });\r",
+									"} else if (statusCode === 400 && message === 'Produto não encontrado') {\r",
+									"    console.log(\"⚠️ Product not found.\");\r",
+									"    pm.test(\"Status 400 - Product not found\", function () {\r",
+									"        pm.expect(message).to.eql('Produto não encontrado');\r",
+									"    });\r",
+									"} else if (statusCode === 400 && message === 'Produto não possui quantidade suficiente') {\r",
+									"    console.log(\"⚠️ Insufficient product quantity.\");\r",
+									"    pm.test(\"Status 400 - Insufficient product quantity\", function () {\r",
+									"        pm.expect(message).to.eql('Produto não possui quantidade suficiente');\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([201, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"if(pm.response.code == 201) {\r",
+									"    pm.environment.set('newCartId', responseJson._id)\r",
+									"    var productQuantityNumber = pm.environment.get('productQuantityNumber');\r",
+									"    const cartQuantityNumber = pm.environment.get('cartQuantityNumber');\r",
+									"    console.log('productQuantityNumber:', productQuantityNumber);\r",
+									"    console.log('cartQuantityNumber: ', cartQuantityNumber);\r",
+									"    productQuantityNumber = productQuantityNumber - cartQuantityNumber\r",
+									"    console.log('productQuantityNumber:', productQuantityNumber);\r",
+									"    pm.environment.set('productQuantityNumber', productQuantityNumber)\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"produtos\": [\r\n    {\r\n      \"idProduto\": \"{{newProductId}}\",\r\n      \"quantidade\": {{cartQuantityNumber}}\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carrinhos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carrinhos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Purchase",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"let responseJson = pm.response.json();\r",
+									"const message = responseJson.message;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"\r",
+									"    if (message === 'Registro excluído com sucesso') {\r",
+									"        console.log(\"✅ Purchase completed successfully.\");\r",
+									"        pm.test(\"Status 200 - Purchase completed\", function () {\r",
+									"            pm.expect(message).to.eql('Registro excluído com sucesso');\r",
+									"        });\r",
+									"    } else if (message === 'Não foi encontrado carrinho para esse usuário') {\r",
+									"        console.log(\"⚠️ Purchase not completed (maybe dont' exist).\");\r",
+									"        pm.test(\"Status 200 - Purchase not completed\", function () {\r",
+									"            pm.expect(message).to.eql('Não foi encontrado carrinho para esse usuário');\r",
+									"        });\r",
+									"    } else {\r",
+									"        console.log(\"⚠️ Unexpected message:\", message);\r",
+									"        pm.test(\"Unexpected message\", function () {\r",
+									"            pm.expect([\"Registro excluído com sucesso\", \"Não foi encontrado carrinho para esse usuário\"]).to.include(message);\r",
+									"        });\r",
+									"    }\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Purchase not completed.\");\r",
+									"    pm.test(\"Status 400 - Cart not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([200, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/carrinhos/concluir-compra",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carrinhos",
+								"concluir-compra"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Purchase",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code;\r",
+									"let responseJson = pm.response.json();\r",
+									"const message = responseJson.message;\r",
+									"\r",
+									"if (statusCode === 200) {\r",
+									"\r",
+									"    if (message === 'Registro excluído com sucesso. Estoque dos produtos reabastecido') {\r",
+									"        console.log(\"✅ Purchase canceled successfully.\");\r",
+									"        pm.test(\"Status 200 - Purchase canceled\", function () {\r",
+									"            pm.expect(message).to.eql('Registro excluído com sucesso. Estoque dos produtos reabastecido');\r",
+									"        });\r",
+									"    } else if (message === 'Não foi encontrado carrinho para esse usuário') {\r",
+									"        console.log(\"⚠️ Purchase not canceled (maybe dont' exist).\");\r",
+									"        pm.test(\"Status 200 - Purchase not canceled\", function () {\r",
+									"            pm.expect(message).to.eql('Não foi encontrado carrinho para esse usuário');\r",
+									"        });\r",
+									"    } else {\r",
+									"        console.log(\"⚠️ Unexpected message:\", message);\r",
+									"        pm.test(\"Unexpected message\", function () {\r",
+									"            pm.expect([\"Registro excluído com sucesso. Estoque dos produtos reabastecido\", \"Não foi encontrado carrinho para esse usuário\"]).to.include(message);\r",
+									"        });\r",
+									"    }\r",
+									"} else if (statusCode === 400) {\r",
+									"    console.log(\"⚠️ Purchase not canceled.\");\r",
+									"    pm.test(\"Status 400 - Cart not found\", function () {\r",
+									"        pm.expect(statusCode).to.eql(400);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Unexpected status: \" + statusCode);\r",
+									"    pm.test(\"Unexpected status\", function () {\r",
+									"        pm.expect([200, 400]).to.include(statusCode);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"if(pm.response.code == 200 && message === 'Registro excluído com sucesso. Estoque dos produtos reabastecido') {\r",
+									"    var productQuantityNumber = pm.environment.get('productQuantityNumber');\r",
+									"    const cartQuantityNumber = pm.environment.get('cartQuantityNumber');\r",
+									"    console.log('productQuantityNumber:', productQuantityNumber);\r",
+									"    console.log('cartQuantityNumber: ', cartQuantityNumber);\r",
+									"    productQuantityNumber = productQuantityNumber + cartQuantityNumber\r",
+									"    console.log('productQuantityNumber:', productQuantityNumber);\r",
+									"    pm.environment.set('productQuantityNumber', productQuantityNumber)\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const loginRequest = {\r",
+									"    url: pm.environment.get('baseURL') + '/login',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            email: pm.environment.get('email'),\r",
+									"            password: pm.environment.get('password')\r",
+									"        }),\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: 'json'\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(loginRequest, function (err, response) {\r",
+									"    let resJson = response.json()\r",
+									"    let tokenSplit = resJson['authorization'].split(' ')\r",
+									"    pm.environment.set('accessToken', tokenSplit[1])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/carrinhos/cancelar-compra",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carrinhos",
+								"cancelar-compra"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

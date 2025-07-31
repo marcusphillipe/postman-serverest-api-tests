@@ -1,0 +1,16 @@
+{
+  "name": "postman-serverest-api-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test:api": "newman run collections/ServeRest.postman_collection.json -e environments/Serverest_Dev.postman_environment.json",
+    "test:html": "newman run collections/ServeRest.postman_collection.json -e environments/Serverest_Dev.postman_environment.json -r cli,html --reporter-html-export reports/report.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "newman": "^6.2.1"
+  }
+}
